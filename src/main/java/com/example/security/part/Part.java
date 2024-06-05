@@ -1,6 +1,7 @@
 package com.example.security.part;
 
 import com.example.security.product.Product;
+import com.example.security.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,4 +27,7 @@ public abstract class Part {
     @ManyToOne
     @JoinColumn(name = "productId")
     private Product product;
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
 }

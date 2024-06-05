@@ -1,12 +1,19 @@
 package com.example.security.part;
 
+import com.example.security.user.Role;
+import com.example.security.user.User;
+import com.example.security.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.example.security.user.Role.USER;
 
 @Service
 @RequiredArgsConstructor
@@ -15,9 +22,34 @@ public class PartService {
     private final PartRepository partRepository;
     private final InHouseRepository inHouseRepository;
     private final OutsourcedRepository outsourcedRepository;
+    private final UserRepository userRepository;
 
     public List<Part> getAllParts() {
-        return partRepository.findAll();
+        // Retrieve the authentication object from the security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Check if the user is authenticated and retrieve the email
+        if (authentication != null && authentication.isAuthenticated()) {
+            String userName = authentication.getName();
+            Optional<User> userInfo = userRepository.findByEmail(userName);
+            // Check if user information is present
+            if (userInfo.isPresent()) {
+                Role role = userInfo.get().getRole();
+                if (role == USER) {
+                    Long userId = Long.valueOf(userInfo.get().getId());
+                    // Now you can use the userId to fetch user-specific parts
+                    return partRepository.findAllByUserId(userId);
+                }
+                else {
+                    return partRepository.findAll();
+                }
+            } else {
+                // User information is not present
+                throw new IllegalStateException("User is not present");
+            }
+        } else {
+            // Handle unauthenticated access
+            throw new IllegalStateException("User is not authenticated");
+        }
     }
 
     public Optional<Part> getPartById(Long id) {
@@ -30,6 +62,22 @@ public class PartService {
     }
 
     public void addNewPart(Part part) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Check if the user is authenticated and retrieve the email
+        if (authentication != null && authentication.isAuthenticated()) {
+            String userName = authentication.getName();
+            Optional<User> userInfo = userRepository.findByEmail(userName);
+            // Check if user information is present
+            if (userInfo.isPresent()) {
+                part.setUser(userInfo.get());
+            } else {
+                // User information is not present
+                throw new IllegalStateException("User is not present");
+            }
+        } else {
+            // Handle unauthenticated access
+            throw new IllegalStateException("User is not authenticated");
+        }
         partRepository.save(part);
     }
 

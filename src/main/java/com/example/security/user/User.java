@@ -1,6 +1,9 @@
 package com.example.security.user;
 
+import com.example.security.part.Part;
+import com.example.security.product.Product;
 import com.example.security.token.Token;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,8 +35,16 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Part> parts;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Product> products;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

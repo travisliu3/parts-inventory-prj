@@ -2,13 +2,20 @@ package com.example.security.product;
 
 import com.example.security.part.Part;
 import com.example.security.part.PartRepository;
+import com.example.security.user.Role;
+import com.example.security.user.User;
+import com.example.security.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.example.security.user.Role.USER;
 
 @Service
 @RequiredArgsConstructor
@@ -16,9 +23,35 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final PartRepository partRepository;
+    private final UserRepository userRepository;
 
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+        // Retrieve the authentication object from the security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Check if the user is authenticated and retrieve the email
+        if (authentication != null && authentication.isAuthenticated()) {
+            String userName = authentication.getName();
+            Optional<User> userInfo = userRepository.findByEmail(userName);
+            // Check if user information is present
+            if (userInfo.isPresent()) {
+                Role role = userInfo.get().getRole();
+                if (role == USER) {
+                    Long userId = Long.valueOf(userInfo.get().getId());
+                    // Now you can use the userId to fetch user-specific parts
+                    return productRepository.findAllByUserId(userId);
+                }
+                else {
+                    return productRepository.findAll();
+                }
+            } else {
+                // User information is not present
+                throw new IllegalStateException("User is not present");
+            }
+        }
+        else {
+            // Handle unauthenticated access
+            throw new IllegalStateException("User is not authenticated");
+        }
     }
 
     public Optional<Product> getProductById(Long id) {
@@ -31,6 +64,22 @@ public class ProductService {
     }
 
     public void addNewProduct(Product product) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Check if the user is authenticated and retrieve the email
+        if (authentication != null && authentication.isAuthenticated()) {
+            String userName = authentication.getName();
+            Optional<User> userInfo = userRepository.findByEmail(userName);
+            // Check if user information is present
+            if (userInfo.isPresent()) {
+                product.setUser(userInfo.get());
+            } else {
+                // User information is not present
+                throw new IllegalStateException("User is not present");
+            }
+        } else {
+            // Handle unauthenticated access
+            throw new IllegalStateException("User is not authenticated");
+        }
         productRepository.save(product);
     }
 

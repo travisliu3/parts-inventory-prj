@@ -1,6 +1,7 @@
 package com.example.security.product;
 
 import com.example.security.part.Part;
+import com.example.security.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,5 +31,7 @@ public class Product {
     @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<Part> parts;
-
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
 }

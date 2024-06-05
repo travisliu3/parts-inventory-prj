@@ -13,6 +13,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
+import static com.example.security.user.Permission.*;
+import static org.springframework.http.HttpMethod.*;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -25,7 +28,12 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/v1/auth/**").permitAll().anyRequest().authenticated()).sessionManagement(session -> session // Configure session management
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(GET, "/api/v1/admin/**").hasAnyAuthority(ADMIN_READ.getPermission())
+                        .requestMatchers(POST, "/api/v1/admin/**").hasAnyAuthority(ADMIN_CREATE.getPermission())
+                        .requestMatchers(PUT, "/api/v1/admin/**").hasAnyAuthority(ADMIN_UPDATE.getPermission())
+                        .requestMatchers(DELETE, "/api/v1/admin/**").hasAnyAuthority(ADMIN_DELETE.getPermission())
+                        .anyRequest().authenticated()).sessionManagement(session -> session // Configure session management
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
