@@ -23,6 +23,7 @@ curl -X POST "http://localhost:8080/api/v1/auth/register" \
   "email": "test3@test",
   "password": "1234"
 }'
+```
 
 #### Response
 
@@ -48,6 +49,7 @@ curl -X POST "http://localhost:8080/api/v1/auth/register" \
     "email": "test3@test",
     "password": "1234"
 }'
+```
 
 #### Response
 
@@ -77,6 +79,7 @@ curl -X POST "http://localhost:8080/api/v1/product" \
     "min": 1,
     "max": 10
 }'
+```
 
 ### POST `/api/v1/part/inHouse`
 
@@ -100,6 +103,7 @@ curl -X POST "http://localhost:8080/api/v1/part/inHouse" \
     "max": "3",
     "machineId": "42343"
 }'
+```
 
 ### POST `/api/v1/part/outsourced`
 
@@ -123,6 +127,7 @@ curl -X POST "http://localhost:8080/api/v1/part/inHouse" \
     "max": "3",
     "companyName": "testName"
 }'
+```
 
 ### PUT `/api/v1/product/{productId}/{partId}`
 
@@ -139,6 +144,7 @@ curl -X PUT "http://localhost:8080/api/v1/product/{productId}/{partId}" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer your-access-token" \
 -d '{}'
+```
 
 ### PUT `/api/part/{partId}?companyName=testName1`
 
@@ -155,6 +161,7 @@ curl -X PUT "http://localhost:8080/api/v1/part/1?companyName=testName1" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer your-access-token" \
 -d '{}'
+```
 
 ### GET `/api/v1/product`
 
@@ -169,6 +176,7 @@ The `GET` request to this endpoint does not require any parameters.
 ```bash
 curl -X GET "http://localhost:8080/api/v1/product" \
 -H "Authorization: Bearer your-access-token"
+```
 
 #### Response
 
@@ -214,6 +222,7 @@ The `GET` request to this endpoint does not require any parameters.
 ```bash
 curl -X GET "http://localhost:8080/api/v1/part" \
 -H "Authorization: Bearer your-access-token"
+```
 
 #### Response
 
@@ -266,6 +275,7 @@ curl -X GET "http://localhost:8080/api/v1/users/change-password" \
     "newPassword": 12345,
     "confirmationPassword":12345
 }'
+```
 
 ### POST `/api/v1/auth/refresh-token`
 
@@ -280,6 +290,7 @@ The `POST` request to this endpoint does not require any parameters.
 ```bash
 curl -X GET "http://localhost:8080/api/v1/auth/refresh-token" \
 -H "Authorization: Bearer your-access-token"
+```
 
 #### Response
 
@@ -301,6 +312,7 @@ The `GET` request to this endpoint does not require any parameters.
 ```bash
 curl -X GET "http://localhost:8080/api/v1/users/getUserName" \
 -H "Authorization: Bearer your-access-token"
+```
 
 #### Response
 
@@ -319,6 +331,7 @@ The `DELETE` request to this endpoint require the partId to be deleted.
 ```bash
 curl -X GET "http://localhost:8080/api/v1/part/{partId}" \
 -H "Authorization: Bearer your-access-token"
+```
 
 ### DELETE `/api/v1/product/{productId}`
 
@@ -333,3 +346,4 @@ The `DELETE` request to this endpoint require the productId to be deleted
 ```bash
 curl -X GET "http://localhost:8080/api/v1/product/{productId}" \
 -H "Authorization: Bearer your-access-token"
+```
